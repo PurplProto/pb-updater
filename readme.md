@@ -9,3 +9,4 @@ expand it for more general use so others could make use of this as well. And now
 
 1. Added an update checker
 1. Option to save user variables (use a dot file and then source it)
+1. Create Contribution.md guide
