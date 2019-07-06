@@ -188,7 +188,7 @@ requestSudoAccess() {
 }
 
 setupInitalVars() {
-    timeStamp=$(date +"%Y%m%d-%H%M%S")
+    timeStamp=$(date +"%Y-%m-%d_%H-%M-%S")
     randomString=$(tr -cd 'a-f0-9' < /dev/urandom | head -c 16)
 
     workingDir="/tmp/pb-${randomString}"
