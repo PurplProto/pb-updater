@@ -62,10 +62,13 @@ main() {
 }
 
 parseOpts() {
-    while getopts ":b:dfhm:s:u:" OPT; do
+    while getopts ":b:B:dfhm:s:u:" OPT; do
         case "${OPT}" in
             b)
                 botPath="${OPTARG}"
+                ;;
+            B)
+                botBackupDir="${OPTARG}"
                 ;;
             d)
                 set -x
@@ -104,6 +107,8 @@ usage() {
     echo -e "${scriptName} Help information:
 
     -b  Bot's path.                 Set the path of where the bot is located. A value is required.
+
+    -B  Bot's backup directory.     By default it is one directory above where the bot is i.e. /path/mycoolbot/../botbackups/
 
     -f  Force update.               Forces the update even if there isn't a new version (an effective reinstall).
 
