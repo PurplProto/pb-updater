@@ -18,10 +18,9 @@ botPath="/opt/phantombot/myCoolBot"                 # Path to the bot's root dir
 botName=$(basename "$botPath")                      # Name of the bot, directory name that contains the bot
 botParentDir=$(dirname "$(readlink -f "$botPath")") # Full path to directory containing the bot directory
 botBackupDir="${botParentDir}/botbackups"           # Path to the bot backup directory
-botUserAccount="twitchbots"                         # Bot user account
-systemdUnitName="phantombot@${botName}"             # Leave as empty string if you do NOT manage your bot with systemd
+botUserAccount="$USER"                              # Bot user account
+systemdUnitName=""                                  # Leave as empty string if you do NOT manage your bot with systemd
 modifiedBotFiles=(
-    "addons/ignorebots.txt"
     "dbbackup"
 ) # List of modified files (relative to the bot's root) to copy to the new install. `config/botlogin.txt` and
   # `config/phantombot.db` are always included by default. Any specified with '-m' will get appended to this list.
@@ -122,7 +121,7 @@ usage() {
 
     -u  Username.                   The username that owns the bot files. If you are unsure, it will most likely be your
                                     user account, which means this can be left as that is assumed by default.
-    
+
 
     There is also a section named \"User variables\" at the begining of this script which you can set the defaults for
     these flags. Then you can simply use ${scriptName}
