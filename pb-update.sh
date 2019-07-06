@@ -10,16 +10,15 @@
 
 ##                               User Variables                               ##
 
-##        For ease of use when hosting a single bot, you should set           ##
-##        these to your own needs. Otherwise, these can all be set            ##
-##                          through the calling flags                         ##
+##     For ease of use when hosting a single bot, you should set these to     ##
+## your own needs. Otherwise, these can all be set through the calling flags. ##
 
-botPath="/opt/phantombot/myCoolBot"                 # Path to the bot's root directory
-botName=$(basename "$botPath")                      # Name of the bot, directory name that contains the bot
-botParentDir=$(dirname "$(readlink -f "$botPath")") # Full path to directory containing the bot directory
-botBackupDir="${botParentDir}/botbackups"           # Path to the bot backup directory
-botUserAccount="$USER"                              # Bot user account
-systemdUnitName=""                                  # Leave as empty string if you do NOT manage your bot with systemd
+botPath="/opt/phantombot/myCoolBot"                 # -b | Path to the bot's root directory
+botName=$(basename "$botPath")                      #    | Name of the bot, directory name that contains the bot
+botParentDir=$(dirname "$(readlink -f "$botPath")") #    | Full path to directory containing the bot directory
+botBackupDir="${botParentDir}/botbackups"           # -B | Path to the bot backup directory
+botUserAccount="$USER"                              # -u | Bot user account
+systemdUnitName=""                                  # -s | Leave as empty string if you do NOT manage your bot with systemd
 modifiedBotFiles=(
     "dbbackup"
 ) # List of modified files (relative to the bot's root) to copy to the new install. `config/botlogin.txt` and
