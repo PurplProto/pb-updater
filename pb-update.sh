@@ -192,7 +192,7 @@ setupInitalVars() {
     randomString=$(tr -cd 'a-f0-9' < /dev/urandom | head -c 16)
 
     workingDir="/tmp/pb-${randomString}"
-    doAsBotUser mkdir "$workingDir"
+    doAsBotUser mkdir -p "$workingDir"
 
     if [[ ! "$botBackupDir" ]]; then
         botBackupDir="${botPath}/../botbackups"
@@ -332,7 +332,7 @@ isNewVersion() {
 backupBot() {
     ctlBot stop
 
-    doAsBotUser mkdir -P "$botBackupDir"
+    doAsBotUser mkdir -p "$botBackupDir"
 
     doAsBotUser XZ_OPT="-6T 0" tar -cJf "$botBackupFile" -C "$botParentDir" "$botName"
 }
