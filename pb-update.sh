@@ -13,14 +13,12 @@
 ##     For ease of use when hosting a single bot, you should set these to     ##
 ## your own needs. Otherwise, these can all be set through the calling flags. ##
 
-botPath="/opt/phantombot/myCoolBot"                 # -b | Path to the bot's root directory
-botName=$(basename "$botPath")                      #    | Name of the bot, directory name that contains the bot
-botParentDir=$(dirname "$(readlink -f "$botPath")") #    | Full path to directory containing the bot directory
-debugEnabled=""                                     # -d | Enables printing all executed commands
-botBackupDir="${botParentDir}/botbackups"           # -B | Path to the bot backup directory
-botUserAccount="$USER"                              # -u | Bot user account
-systemdUnitName=""                                  # -s | Leave as empty string if you do NOT manage your bot with systemd
-modifiedBotFiles=(
+botPath="/opt/phantombot/myCoolBot"      # -b | Path to the bot's root directory
+debugEnabled=""                          # -d | Enables printing all executed commands
+botBackupDir="${botPath}/../botbackups"  # -B | Path to the bot backup directory
+botUserAccount="$USER"                   # -u | Bot user account
+systemdUnitName=""                       # -s | Leave as empty string if you do NOT manage your bot with systemd
+modifiedBotFiles=(                       # -m | List of double quoted strings seperated by spaces or newlines
     "dbbackup"
 ) # List of modified files (relative to the bot's root) to copy to the new install. `config/botlogin.txt` and
   # `config/phantombot.db` are always included by default. Any specified with '-m' will get appended to this list.
@@ -284,6 +282,8 @@ curlAFile() {
 }
 
 setScriptVars() {
+    botName=$(basename "$botPath")
+    botParentDir=$(dirname "$(readlink -f "$botPath")")
     botBackupFile="${botBackupDir%/}/${botName}-v${installedPbVersion}-${timeStamp}.tar.xz"
     modifiedBotFiles+=("config/botlogin.txt" "config/phantombot.db")
 
