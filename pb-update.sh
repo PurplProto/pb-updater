@@ -380,8 +380,7 @@ installNewBotVersion() {
     done
 }
 
-setCorrectOwnerOnBotDirectory() {
-    sudo chown "${botUserAccount}":"${botUserAccount}" -R "${botPath}"
+makeLaunchScriptsExecuteable() {
     doAsBotUser chmod u+x "${botPath}"/launch*.sh
 }
 
