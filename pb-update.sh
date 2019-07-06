@@ -195,7 +195,7 @@ setupInitalVars() {
     doAsBotUser mkdir -p "$workingDir"
 
     if [[ ! "$botBackupDir" ]]; then
-        botBackupDir="${botPath}/../botbackups"
+        botBackupDir="${botPath%/}/../botbackups"
     fi
 }
 
