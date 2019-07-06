@@ -16,7 +16,7 @@
 botPath="/opt/phantombot/myCoolBot"      # -b | Path to the bot's root directory
 debugEnabled=""                          # -d | Enables printing all executed commands
 botBackupDir="${botPath}/../botbackups"  # -B | Path to the bot backup directory
-botUserAccount="$USER"                   # -u | Bot user account
+botUserAccount=""                        # -u | Bot user account
 systemdUnitName=""                       # -s | Leave as empty string if you do NOT manage your bot with systemd
 modifiedBotFiles=(                       # -m | List of double quoted strings seperated by spaces or newlines
     "dbbackup"
@@ -125,8 +125,8 @@ usage() {
                                     running status. If you are not sure what this is for, you probably don't need this
                                     and can shut down the bot as you normally would before running this script.
 
-    -u  Username.                   The username that owns the bot files. If you are unsure, it will most likely be your
-                                    user account, which means this can be left as that is assumed by default.
+    -u  Username.                   The user account that owns the bot files. If none specified, file operations will be
+                                    run as the current user running the script. Useful for cronjobs.
 
 
     There is also a section named \"User variables\" at the begining of this script which you can set the defaults for
