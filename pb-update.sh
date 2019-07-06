@@ -16,6 +16,7 @@
 botPath="/opt/phantombot/myCoolBot"                 # -b | Path to the bot's root directory
 botName=$(basename "$botPath")                      #    | Name of the bot, directory name that contains the bot
 botParentDir=$(dirname "$(readlink -f "$botPath")") #    | Full path to directory containing the bot directory
+debugEnabled=""                                     # -d | Enables printing all executed commands
 botBackupDir="${botParentDir}/botbackups"           # -B | Path to the bot backup directory
 botUserAccount="$USER"                              # -u | Bot user account
 systemdUnitName=""                                  # -s | Leave as empty string if you do NOT manage your bot with systemd
@@ -44,6 +45,7 @@ main() {
     local scriptVersion=1.0
 
     parseOpts "${@}"
+    checkDebug
 
     echo -e "${scriptDisplayName} v${scriptVersion}\n"
 
@@ -110,6 +112,8 @@ usage() {
 
     -B  Bot's backup directory.     By default it is one directory above where the bot is i.e. /path/mycoolbot/../botbackups/
 
+    -d  Debug.                      Forces bash to print every line it executes. Useful for reporting issues.
+
     -f  Force update.               Forces the update even if there isn't a new version (an effective reinstall).
 
     -h  Help.                       Displays this help message.
@@ -147,6 +151,13 @@ usage() {
 
         # Finally, if you have set the user variables appropriately, this is an even simpler usecase
         ${scriptName}"
+}
+
+checkDebug() {
+    if [[ "$debugEnabled" ]]; then
+        echo "Debug enabled!"
+        set -x
+    fi
 }
 
 abortScript() {
