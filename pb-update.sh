@@ -13,9 +13,9 @@
 ##     For ease of use when hosting a single bot, you should set these to     ##
 ## your own needs. Otherwise, these can all be set through the calling flags. ##
 
-botPath="/opt/phantombot/myCoolBot"      # -b | Path to the bot's root directory
+botPath=""                               # -b | Path to the bot's root directory
 debugEnabled=""                          # -d | Enables printing all executed commands
-botBackupDir="${botPath}/../botbackups"  # -B | Path to the bot backup directory
+botBackupDir=""                          # -B | Path to the bot backup directory
 botUserAccount=""                        # -u | Bot user account
 systemdUnitName=""                       # -s | Leave as empty string if you do NOT manage your bot with systemd
 modifiedBotFiles=(                       # -m | List of double quoted strings seperated by spaces or newlines
@@ -193,10 +193,18 @@ setupInitalVars() {
 
     workingDir="/tmp/pb-${randomString}"
     doAsBotUser mkdir "$workingDir"
+
+    if [[ ! "$botBackupDir" ]]; then
+        botBackupDir="${botPath}/../botbackups"
+    fi
 }
 
 checkUserVars() {
-    if [[ ! -d "$botPath" ]]; then
+    if [[ ! "$botPath" ]] || [[ ! -d "$botPath" ]]; then
+        abortScript "The bot path \"${botPath}\" doesn't seem to exist"
+    fi
+
+    if [[ "$botBackupDir" ]] && [[ ! -d "$botBackupDir" ]]; then
         abortScript "The bot path \"${botPath}\" doesn't seem to exist"
     fi
 
