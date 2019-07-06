@@ -104,11 +104,11 @@ parseOpts() {
 }
 
 usage() {
-    echo -e "${scriptName} Help information:
+    echo "${scriptName} Help information:
 
     -b  Bot's path.                 Set the path of where the bot is located. A value is required.
 
-    -B  Bot's backup directory.     By default it is one directory above where the bot is i.e. /path/mycoolbot/../botbackups/
+    -B  Bot's backup directory.     By default, one directory above where the bot is i.e. /path/mycoolbot/../botbackups/
 
     -d  Debug.                      Forces bash to print every line it executes. Useful for reporting issues.
 
@@ -130,7 +130,7 @@ usage() {
 
 
     There is also a section named \"User variables\" at the begining of this script which you can set the defaults for
-    these flags. Then you can simply use ${scriptName}
+    these flags.
 
     Examples:
         # This is the simplist use case:
@@ -141,13 +141,14 @@ usage() {
         # This is the same as above but with the options in a more compact form
         ${scriptName} -fb /home/jondoe/phantombot
 
-        # This will ensure the 2 specified file and directory will be copied to the new install
+        # This will ensure the specified file and directory will be copied to the new install
         ${scriptName} -b /home/jondoe/phantombot -m \"addons/ignorebots.txt\" -m \"dbbackup/\"
 
-        # This will use the user account 'phantombot' for all file operations i.e. backing up and copying the \"addons/ignorebots.txt\" file and restart the specified service
+        # This will use the user account 'phantombot' for all file operations i.e. backing up the bot and copying the
+        # \"addons/ignorebots.txt\" file to the new install. Finally, it will restart the specified service
         ${scriptName} -b /home/jondoe/phantombot -m \"addons/ignorebots.txt\" -u \"phantombot\" -s \"phantombot.service\"
 
-        # Finally, if you have set the user variables appropriately, this is an even simpler usecase
+        # If you have set the user variables in this script appropriately, this is an even simpler usecase
         ${scriptName}"
 }
 
