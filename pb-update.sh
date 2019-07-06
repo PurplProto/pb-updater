@@ -339,9 +339,13 @@ backupBot() {
 
 doAsBotUser() {
     if [[ "$botUserAccount" ]]; then
-        sudo -u "$botUserAccount" "$@"
+        sudo -u "$botUserAccount" "$@" || commandFailed="$true"
     else
-        "$@"
+        "$@" || commandFailed="$true"
+    fi
+
+    if [[ "$commandFailed" ]]; then
+        abortScript "Failed to execute a command"
     fi
 }
 
@@ -369,7 +373,7 @@ downloadNewPbUpdateAndExtract() {
     local pbZipPath="${workingDir}/pb-${latestPbVersion}.zip"
 
     curlAFile "${pbZipUrl}" "${pbZipPath}"
-    doAsBotUser unzip -d "${pbExtracted}" "${pbZipPath}" 2>/dev/null
+    doAsBotUser unzip -d "${pbExtracted}" "${pbZipPath}" 1>/dev/null
 }
 
 installNewBotVersion() {
