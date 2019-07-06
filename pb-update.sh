@@ -331,7 +331,7 @@ backupBot() {
 
 doAsBotUser() {
     if [[ "$botUserAccount" ]]; then
-    sudo -u "$botUserAccount" "$@"
+        sudo -u "$botUserAccount" "$@"
     else
         "$@"
     fi
@@ -343,7 +343,7 @@ updateBot() {
 
     downloadNewPbUpdateAndExtract
     installNewBotVersion
-    setCorrectOwnerOnBotDirectory
+    makeLaunchScriptsExecuteable
     cleanUp
 
     ctlBot restart
@@ -386,7 +386,7 @@ makeLaunchScriptsExecuteable() {
 
 cleanUp() {
     if [[ -d "$workingDir" ]] || [[ -d "$botOldName" ]]; then
-        sudo rm -rf "$workingDir" "$botOldName"
+        doAsBotUser rm -rf "$workingDir" "$botOldName"
     fi
 }
 
