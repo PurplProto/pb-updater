@@ -330,7 +330,11 @@ backupBot() {
 }
 
 doAsBotUser() {
+    if [[ "$botUserAccount" ]]; then
     sudo -u "$botUserAccount" "$@"
+    else
+        "$@"
+    fi
 }
 
 updateBot() {
