@@ -207,7 +207,8 @@ checkUserVars() {
     fi
 
     if [[ "$botBackupDir" ]] && [[ ! -d "$botBackupDir" ]]; then
-        abortScript "The given backup path \"${botBackupDir}\" is not a valid directory."
+        echo "\"${botBackupDir}\" doesn't exist, it will be created."
+        doAsBotUser mkdir -p "$botBackupDir"
     fi
 
     if [[ "$botUserAccount" ]]; then
@@ -333,8 +334,6 @@ isNewVersion() {
 
 backupBot() {
     ctlBot stop
-
-    doAsBotUser mkdir -p "$botBackupDir"
 
     export XZ_OPT=-7T0
     doAsBotUser tar -cJf "$botBackupFile" -C "$botParentDir" "$botName"
