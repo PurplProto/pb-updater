@@ -18,6 +18,7 @@ debugEnabled=""                          # -d | Enables printing all executed co
 botBackupDir=""                          # -B | Path to the bot backup directory
 botUserAccount=""                        # -u | Bot user account
 systemdUnitName=""                       # -s | Leave as empty string if you do NOT manage your bot with systemd
+logLevel=1                               # -v | Verbose log messages. Can have value upto 3
 modifiedBotFiles=(                       # -m | List of double quoted strings seperated by spaces or newlines
     "dbbackup"
 ) # List of modified files (relative to the bot's root) to copy to the new install. `config/botlogin.txt` and
@@ -45,24 +46,24 @@ main() {
     parseOpts "${@}"
     checkDebug
 
-    echo -e "${scriptDisplayName} v${scriptVersion}\n"
+    logMessage "${scriptDisplayName} v${scriptVersion}\n"
 
     checkUserVars
-    setupInitalVars
+    setupInitialVars
     checkPrerequisites
     setScriptVars
 
     if [[ "$isUpdateReady" ]] || [[ "$forceUpdate" ]]; then
         backupBot
         updateBot
-        echo -e "Update complete!\n"
+        logMessage "Update complete!"
     else
-        echo -e "There's no new update avalible. You may still use '-f' to force an update.\n"
+        logMessage "There's no new update available. You may still use '-f' to force an update.\n"
     fi
 }
 
 parseOpts() {
-    while getopts ":b:B:dfhm:s:u:" OPT; do
+    while getopts ":b:B:dfhm:s:Su:v" OPT; do
         case "${OPT}" in
             b)
                 botPath="${OPTARG}"
@@ -86,8 +87,14 @@ parseOpts() {
             s)
                 systemdUnitName="${OPTARG}"
                 ;;
+            S)
+                logLevel=0
+                ;;
             u)
                 botUserAccount="${OPTARG}"
+                ;;
+            v)
+                ((logLevel++))
                 ;;
             \?)
                 usage
@@ -119,21 +126,26 @@ usage() {
     -m  Modified files/directories. List of modified files/directories from the bot's root directory to backup and copy
                                     to the new install. A value is required, can be used multiple times.
 
-    -s  systemd unit name           Tells the script that the bot runs using systemd. A value is required. If specified,
+    -s  systemd unit name.          Tells the script that the bot runs using systemd. A value is required. If specified,
                                     the bot will be restarted after the update. If this is unset, then you should
-                                    shutdown your bot before proceeding as the script will have no knowldge of it's
+                                    shutdown your bot before proceeding as the script will have no knowledge of it's
                                     running status. If you are not sure what this is for, you probably don't need this
                                     and can shut down the bot as you normally would before running this script.
 
+    -S Silent.                      No script generated output. However, stderr won't get redirected, so error messages
+                                    from subprocess will still produce error output should one occur. 
+
     -u  Username.                   The user account that owns the bot files. If none specified, file operations will be
                                     run as the current user running the script. Useful for cronjobs.
+
+    -v Verbose.                     Verbose messages. Can be specified upto 3 times.
 
 
     There is also a section named \"User variables\" at the begining of this script which you can set the defaults for
     these flags.
 
     Examples:
-        # This is the simplist use case:
+        # This is the simplest use case:
         ${scriptName} -b /home/jondoe/phantombot
 
         # This will reinstall PhantomBot if you're already on the latest version
@@ -148,20 +160,20 @@ usage() {
         # \"addons/ignorebots.txt\" file to the new install. Finally, it will restart the specified service
         ${scriptName} -b /home/jondoe/phantombot -m \"addons/ignorebots.txt\" -u \"phantombot\" -s \"phantombot.service\"
 
-        # If you have set the user variables in this script appropriately, this is an even simpler usecase
+        # If you have set the user variables in this script appropriately, this is an even simpler use-case
         ${scriptName}"
 }
 
 checkDebug() {
     if [[ "$debugEnabled" ]]; then
-        echo "Debug enabled!"
+        logMessage "Debug enabled!"
         set -x
     fi
 }
 
 abortScript() {
     errorMessage="$1"
-    echo -e "$errorMessage" >&2
+    logError "$errorMessage"
     cleanUp
     exit 1
 }
@@ -177,7 +189,7 @@ requestSudoAccess() {
 
     sudoAccessActive=$(sudo -n echo "$true" 2> /dev/null)
     if [[ ! "$sudoAccessActive" ]]; then
-        echo "$messageIfSudoPasswordNeeded"
+        logInfo "$messageIfSudoPasswordNeeded"
     fi
 
     sudo -l > /dev/null && isSudoAccessGranted="$true"
@@ -187,7 +199,7 @@ requestSudoAccess() {
     fi
 }
 
-setupInitalVars() {
+setupInitialVars() {
     timeStamp=$(date +"%Y-%m-%d_%H-%M-%S")
     randomString=$(tr -cd 'a-f0-9' < /dev/urandom | head -c 16)
 
@@ -207,7 +219,7 @@ checkUserVars() {
     fi
 
     if [[ "$botBackupDir" ]] && [[ ! -d "$botBackupDir" ]]; then
-        echo "\"${botBackupDir}\" doesn't exist, it will be created."
+        logWarn "\"${botBackupDir}\" doesn't exist, it will be created."
         doAsBotUser mkdir -p "$botBackupDir"
     fi
 
@@ -248,7 +260,7 @@ checkPrerequisites() {
     done
 
     if [[ "$aCommandDoesNotExist" ]]; then
-        echo -e "Some pre-requisites need to be installed\n"
+        logWarn "Some pre-requisites need to be installed\n"
         installPrerequisites
     fi
 }
@@ -266,7 +278,7 @@ installPrerequisites() {
         && aptInstallIsSuccessful="$true"
 
     if [[ $aptInstallIsSuccessful ]]; then
-        echo "Pre-requisites installed truefully"
+        logInfo "Pre-requisites installed successfully"
     else
         abortScript "Failed to install all required pre-requisites. Unable to continue."
     fi
@@ -357,7 +369,7 @@ updateBot() {
 
     downloadNewPbUpdateAndExtract
     installNewBotVersion
-    makeLaunchScriptsExecuteable
+    makeLaunchScriptsExecutable
     cleanUp
 
     ctlBot restart
@@ -395,13 +407,55 @@ installNewBotVersion() {
     done
 }
 
-makeLaunchScriptsExecuteable() {
+makeLaunchScriptsExecutable() {
     doAsBotUser chmod u+x "${botPath%/}"/launch*.sh
 }
 
 cleanUp() {
     if [[ -d "$workingDir" ]] || [[ -d "$botOldName" ]]; then
         doAsBotUser rm -rf "$workingDir" "$botOldName"
+    fi
+}
+
+logInfo() {
+    local logTag="Verbose: "
+    local white='\033[1;37m'
+    local none='\033[0m'
+    local message="$1"
+
+    if [[ "$logLevel" -gt 3 ]]; then
+        echo -e "${logTag}${white}${message}${none}"
+    fi
+}
+
+logWarn() {
+    local logTag="Warning: "
+    local yellow='\033[1;33m'
+    local none='\033[0m'
+    local message="$1"
+
+    if [[ "$logLevel" -gt 2 ]]; then
+        echo -e "${logTag}${yellow}${message}${none}"
+    fi
+}
+
+logError() {
+    local logTag="Error: "
+    local red='\033[0;31m'
+    local none='\033[0m'
+    local message="$1"
+
+    if [[ "$logLevel" -gt 1 ]]; then
+        echo -e "${logTag}${red}${message}${none}" >&2
+    fi
+}
+
+logMessage() {
+    local logTag="Information: "
+    local message="$1"
+
+    if [[ "$logLevel" -gt 1 ]]; then
+        echo -e "${logTag}${message}"
     fi
 }
 
