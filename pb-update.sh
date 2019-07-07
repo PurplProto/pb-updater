@@ -138,7 +138,7 @@ usage() {
     -u  Username.                   The user account that owns the bot files. If none specified, file operations will be
                                     run as the current user running the script. Useful for cronjobs.
 
-    -v Verbose.                     Verbose messages. Can be specified upto 3 times.
+    -v Verbose.                     Verbose messages. Can be specified up to 2 times.
 
 
     There is also a section named \"User variables\" at the begining of this script which you can set the defaults for
@@ -182,6 +182,8 @@ requestSudoAccess() {
     local messageIfSudoPasswordNeeded="$1"
     local forceInvalidateSudo="$2"
     local isSudoAccessGranted=""
+
+    logInfo "Checking sudo access"
 
     if [[ "$forceInvalidateSudo" ]]; then
         sudo -k
@@ -255,6 +257,8 @@ checkPrerequisites() {
         ["xidel"]="debFileNotSet"
     )
 
+    logInfo "Checking pre-requisites"
+
     for command in "${!commandToPackageName[@]}"; do
         command -pv "$command" > /dev/null || aCommandDoesNotExist="$true"
     done
@@ -294,6 +298,8 @@ getXidelDeb() {
         xidelUrl="https://github.com/benibela/xidel/releases/download/Xidel_0.9.8/xidel_0.9.8-1_amd64.deb"
     fi
 
+    logInfo "Fetching the xidel deb"
+
     curlAFile "$xidelUrl" "$xidelDeb"
 }
 
@@ -323,6 +329,8 @@ getLatestVersion() {
     local pbBuildFile="${workingDir%/}/latest.xml"
     local pbLatestVersionXml="https://raw.githubusercontent.com/PhantomBot/PhantomBot/master/build.xml"
 
+    logInfo "Fetching build.xml"
+
     curlAFile "$pbLatestVersionXml" "$pbBuildFile"
 
     latestPbVersion=$(xidel "$pbBuildFile" -e "css('property[name=version]')/@value" 2>/dev/null)
@@ -346,6 +354,8 @@ isNewVersion() {
 
 backupBot() {
     ctlBot stop
+
+    logInfo "Backing up the bot"
 
     export XZ_OPT=-7T0
     doAsBotUser tar -cJf "$botBackupFile" -C "$botParentDir" "$botName"
@@ -386,13 +396,19 @@ downloadNewPbUpdateAndExtract() {
     local pbZipUrl="https://github.com/PhantomBot/PhantomBot/releases/download/v${latestPbVersion%/}/PhantomBot-${latestPbVersion}.zip"
     local pbZipPath="${workingDir%/}/pb-${latestPbVersion}.zip"
 
+    logInfo "Downloading new PB version ${latestPbVersion}"
+
     curlAFile "${pbZipUrl}" "${pbZipPath}"
     doAsBotUser unzip -d "${pbExtracted}" "${pbZipPath}" 1>/dev/null
 }
 
 installNewBotVersion() {
+    logInfo "Installing new PB version"
+
     doAsBotUser mv "${botPath%/}" "${botOldName%/}"
     doAsBotUser mv "${pbExtracted%/}/PhantomBot-${latestPbVersion}" "${botPath%/}"
+
+    logInfo "Adding moving modified files to the new version"
 
     for fileOrDir in "${modifiedBotFiles[@]}"; do
         local fileOrDirAbsolutePath="${botOldName%/}/${fileOrDir%/}"
@@ -408,11 +424,15 @@ installNewBotVersion() {
 }
 
 makeLaunchScriptsExecutable() {
+    logInfo "Making launch scripts executable"
+
     doAsBotUser chmod u+x "${botPath%/}"/launch*.sh
 }
 
 cleanUp() {
     if [[ -d "$workingDir" ]] || [[ -d "$botOldName" ]]; then
+        logInfo "Cleaning up the workspace"
+
         doAsBotUser rm -rf "$workingDir" "$botOldName"
     fi
 }
@@ -423,8 +443,8 @@ logInfo() {
     local none='\033[0m'
     local message="$1"
 
-    if [[ "$logLevel" -gt 3 ]]; then
-        echo -e "${logTag}${white}${message}${none}"
+    if [[ "$logLevel" -gt 2 ]]; then
+        echo -e "${white}${logTag}${message}${none}"
     fi
 }
 
@@ -434,8 +454,8 @@ logWarn() {
     local none='\033[0m'
     local message="$1"
 
-    if [[ "$logLevel" -gt 2 ]]; then
-        echo -e "${logTag}${yellow}${message}${none}"
+    if [[ "$logLevel" -gt 1 ]]; then
+        echo -e "${yellow}${logTag}${message}${none}"
     fi
 }
 
@@ -445,17 +465,16 @@ logError() {
     local none='\033[0m'
     local message="$1"
 
-    if [[ "$logLevel" -gt 1 ]]; then
-        echo -e "${logTag}${red}${message}${none}" >&2
+    if [[ "$logLevel" -gt 0 ]]; then
+        echo -e "${red}${logTag}${message}${none}" >&2
     fi
 }
 
 logMessage() {
-    local logTag="Information: "
     local message="$1"
 
-    if [[ "$logLevel" -gt 1 ]]; then
-        echo -e "${logTag}${message}"
+    if [[ "$logLevel" -gt 0 ]]; then
+        echo -e "${message}"
     fi
 }
 
