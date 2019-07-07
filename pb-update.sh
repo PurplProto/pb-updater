@@ -200,19 +200,21 @@ setupInitalVars() {
 }
 
 checkUserVars() {
-    if [[ ! "$botPath" ]] || [[ ! -d "$botPath" ]]; then
-        abortScript "The bot path \"${botPath}\" doesn't seem to exist"
+    if [[ ! "$botPath" ]]; then
+        abortScript "No bot path given. Cannot continue."
+    elif [[ ! -d "$botPath" ]]; then
+        abortScript "The given bot path \"${botPath}\" doesn't seem to exist."
     fi
 
     if [[ "$botBackupDir" ]] && [[ ! -d "$botBackupDir" ]]; then
-        abortScript "The bot path \"${botPath}\" doesn't seem to exist"
+        abortScript "The given backup path \"${botBackupDir}\" is not a valid directory."
     fi
 
     if [[ "$botUserAccount" ]]; then
         accountExists=$(id -u "$botUserAccount" > /dev/null && echo "$true")
 
         if [[ ! "$accountExists" ]]; then
-            abortScript "The user account \"${botUserAccount}\" doesn't appear to exist"
+            abortScript "The user account \"${botUserAccount}\" doesn't appear to exist."
         fi
 
         requestSudoAccess "sudo access is required to login as the bot user. Please grant access, otherwise the script will be terminated here."
@@ -220,7 +222,7 @@ checkUserVars() {
 
     unitExists=$(ctlBot status > /dev/null && echo "$true")
     if [[ "$systemdUnitName" ]] && [[ ! "$unitExists" ]]; then
-        abortScript "The unit \"${systemdUnitName}\" doesn't appear to exist"
+        abortScript "The unit \"${systemdUnitName}\" doesn't appear to exist."
     fi
 
     for relativeFileOrDir in "${modifiedBotFiles[@]}"; do
