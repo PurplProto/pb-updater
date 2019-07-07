@@ -291,15 +291,15 @@ curlAFile() {
 }
 
 setScriptVars() {
-    botName=$(basename "$botPath")
-    botParentDir=$(dirname "$(readlink -f "$botPath")")
-    botBackupFile="${botBackupDir%/}/${botName}-v${installedPbVersion}-${timeStamp}.tar.xz"
-    modifiedBotFiles+=("config/botlogin.txt" "config/phantombot.db")
-
     latestPbVersion=0.0.0
     installedPbVersion=0.0.0
     getLatestVersion
     getCurrentVersion
+
+    botName=$(basename "$botPath")
+    botParentDir=$(dirname "$(readlink -f "$botPath")")
+    botBackupFile=$(readlink -f "${botBackupDir%/}/${botName}-v${installedPbVersion}-${timeStamp}.tar.xz")
+    modifiedBotFiles+=("config/botlogin.txt" "config/phantombot.db")
 
     isUpdateReady=$(isNewVersion "$latestPbVersion" "$installedPbVersion" && echo "$true")
 }
