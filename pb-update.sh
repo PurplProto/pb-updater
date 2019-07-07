@@ -334,8 +334,8 @@ backupBot() {
 
     doAsBotUser mkdir -p "$botBackupDir"
 
-    export XZ_OPT=-e9T0
-    doAsBotUser tar -cJf "$botBackupFile" -C "$botParentDir" "$botPath"
+    export XZ_OPT=-7T0
+    doAsBotUser tar -cJf "$botBackupFile" -C "$botParentDir" "$botName"
 }
 
 doAsBotUser() {
