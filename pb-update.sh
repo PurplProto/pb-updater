@@ -79,7 +79,7 @@ parseOpts() {
                 ;;
             h)
                 usage
-                abortScript ""
+                exit 0
                 ;;
             m)
                 modifiedBotFiles+=("${OPTARG[@]}")
