@@ -40,7 +40,7 @@ main() {
     local true="1"
     local scriptDisplayName="PairedPrototype's PhantomBot Updater"
     local scriptName="$0"
-    local scriptVersion=1.0
+    local scriptVersion="1.0.0"
 
     parseOpts "${@}"
     checkDebug
