@@ -13,15 +13,15 @@
 ##     For ease of use when hosting a single bot, you should set these to     ##
 ## your own needs. Otherwise, these can all be set through the calling flags. ##
 
-botPath=""                               # -b | Path to the bot's root directory
-debugEnabled=""                          # -d | Enables printing all executed commands
-botBackupDir=""                          # -B | Path to the bot backup directory
-botUserAccount=""                        # -u | Bot user account
-systemdUnitName=""                       # -s | Leave as empty string if you do NOT manage your bot with systemd
-logLevel=1                               # -v | Verbose log messages. Can have value upto 3
-modifiedBotFiles=(                       # -m | List of double quoted strings seperated by spaces or newlines
+botPath=""              # -b | Path to the bots root directory
+debugEnabled=""         # -d | Enables printing all executed commands
+botBackupDir=""         # -B | Path to the bot backup directory
+botUserAccount=""       # -u | Bot user account
+systemdUnitName=""      # -s | Leave as empty string if you do NOT manage your bot with systemd
+logLevel=1              # -v | Verbose log messages. Can have value up to 3
+modifiedBotFiles=(      # -m | List of double quoted strings separated by spaces or newlines
     "dbbackup"
-) # List of modified files (relative to the bot's root) to copy to the new install. `config/botlogin.txt` and
+) # List of modified files (relative to the bots root) to copy to the new install. `config/botlogin.txt` and
   # `config/phantombot.db` are always included by default. Any specified with '-m' will get appended to this list.
 
 ##                            End of User Variables                           ##
@@ -113,9 +113,9 @@ parseOpts() {
 usage() {
     echo "${scriptName} Help information:
 
-    -b  Bot's path.                 Set the path of where the bot is located. A value is required.
+    -b  Bots path.                 Set the path of where the bot is located. A value is required.
 
-    -B  Bot's backup directory.     By default, one directory above where the bot is i.e. /path/mycoolbot/../botbackups/
+    -B  Bots backup directory.     By default, one directory above where the bot is i.e. /path/mycoolbot/../botbackups/
 
     -d  Debug.                      Forces bash to print every line it executes. Useful for reporting issues.
 
@@ -123,7 +123,7 @@ usage() {
 
     -h  Help.                       Displays this help message.
 
-    -m  Modified files/directories. List of modified files/directories from the bot's root directory to backup and copy
+    -m  Modified files/directories. List of modified files/directories from the bots root directory to backup and copy
                                     to the new install. A value is required, can be used multiple times.
 
     -s  systemd unit name.          Tells the script that the bot runs using systemd. A value is required. If specified,
@@ -141,7 +141,7 @@ usage() {
     -v Verbose.                     Verbose messages. Can be specified up to 2 times.
 
 
-    There is also a section named \"User variables\" at the begining of this script which you can set the defaults for
+    There is also a section named \"User variables\" at the beginning of this script which you can set the defaults for
     these flags.
 
     Examples:
