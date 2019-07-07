@@ -251,7 +251,7 @@ checkPrerequisites() {
 }
 
 installPrerequisites() {
-    local xidelDeb="${workingDir}/xidel_0.9.8.deb"
+    local xidelDeb="${workingDir%/}/xidel_0.9.8.deb"
 
     commandToPackageName["xidel"]="$xidelDeb"
 
@@ -305,7 +305,7 @@ setScriptVars() {
 }
 
 getLatestVersion() {
-    local pbBuildFile="${workingDir}/latest.xml"
+    local pbBuildFile="${workingDir%/}/latest.xml"
     local pbLatestVersionXml="https://raw.githubusercontent.com/PhantomBot/PhantomBot/master/build.xml"
 
     curlAFile "$pbLatestVersionXml" "$pbBuildFile"
@@ -314,7 +314,7 @@ getLatestVersion() {
 }
 
 getCurrentVersion() {
-    installedPbVersion=$(unzip -qc "${botPath}/PhantomBot.jar" "META-INF/MANIFEST.MF"\
+    installedPbVersion=$(unzip -qc "${botPath%/}/PhantomBot.jar" "META-INF/MANIFEST.MF"\
         | grep -oP '(?<=Implementation-Version: )(\d+|\.)*')
 }
 
@@ -351,8 +351,8 @@ doAsBotUser() {
 }
 
 updateBot() {
-    local botOldName="${botPath}.old"
-    local pbExtracted="${workingDir}/extracted"
+    local botOldName="${botPath%/}.old"
+    local pbExtracted="${workingDir%/}/extracted"
 
     downloadNewPbUpdateAndExtract
     installNewBotVersion
@@ -370,31 +370,32 @@ ctlBot() {
 }
 
 downloadNewPbUpdateAndExtract() {
-    local pbZipUrl="https://github.com/PhantomBot/PhantomBot/releases/download/v${latestPbVersion}/PhantomBot-${latestPbVersion}.zip"
-    local pbZipPath="${workingDir}/pb-${latestPbVersion}.zip"
+    local pbZipUrl="https://github.com/PhantomBot/PhantomBot/releases/download/v${latestPbVersion%/}/PhantomBot-${latestPbVersion}.zip"
+    local pbZipPath="${workingDir%/}/pb-${latestPbVersion}.zip"
 
     curlAFile "${pbZipUrl}" "${pbZipPath}"
     doAsBotUser unzip -d "${pbExtracted}" "${pbZipPath}" 1>/dev/null
 }
 
 installNewBotVersion() {
-    doAsBotUser mv "$botPath" "$botOldName"
-    doAsBotUser mv "${pbExtracted}/PhantomBot-${latestPbVersion}" "${botPath}"
+    doAsBotUser mv "${botPath%/}" "${botOldName%/}"
+    doAsBotUser mv "${pbExtracted%/}/PhantomBot-${latestPbVersion}" "${botPath%/}"
 
     for fileOrDir in "${modifiedBotFiles[@]}"; do
-        local fileOrDirAbsolutePath="${botOldName%/}/${fileOrDir}"
+        local fileOrDirAbsolutePath="${botOldName%/}/${fileOrDir%/}"
 
         ## If file, copy it. If directory copy it's contents
         if [[ -f "$fileOrDirAbsolutePath" ]]; then
-            doAsBotUser cp -Pr "$fileOrDirAbsolutePath" "$botPath"/
+            doAsBotUser cp -Pr "$fileOrDirAbsolutePath" "${botPath%/}/"
         elif [[ -d "$fileOrDirAbsolutePath" ]]; then
-            doAsBotUser cp -Pr "$fileOrDirAbsolutePath"/* "$botPath"/
+            doAsBotUser mkdir -p "${botPath%/}/${fileOrDir}"
+            doAsBotUser cp -Pr "$fileOrDirAbsolutePath"/* "${botPath%/}/${fileOrDir}/"
         fi
     done
 }
 
 makeLaunchScriptsExecuteable() {
-    doAsBotUser chmod u+x "${botPath}"/launch*.sh
+    doAsBotUser chmod u+x "${botPath%/}"/launch*.sh
 }
 
 cleanUp() {
