@@ -1,0 +1,30 @@
+{
+  "name": "pb-updater",
+  "version": "0.0.1-alpha",
+  "description": "A bash script for updating a PhantomBot",
+  "main": "pb-update.sh",
+  "scripts": {
+    "test": "npx bats tests/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PairedPrototype/pb-updater.git"
+  },
+  "keywords": [
+    "PhantomBot",
+    "Phantom Bot",
+    "update",
+    "updater",
+    "bash",
+    "script"
+  ],
+  "author": "PairedPrototype",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/PairedPrototype/pb-updater/issues"
+  },
+  "homepage": "https://github.com/PairedPrototype/pb-updater#readme",
+  "devDependencies": {
+    "bats": "^1.1.0"
+  }
+}
