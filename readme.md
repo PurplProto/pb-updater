@@ -16,6 +16,7 @@ defaults for the listed options.
 
 ## TODO
 
+1. Test all the things! (may evolve restructuring the script)
 1. Use the Github API to check for releases rather than the build.xml
 1. Add an update checker
 1. Allow user to set backup compression ratio
