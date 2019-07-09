@@ -1,10 +1,20 @@
 {
     "cSpell.words": [
         "OPTARG",
+        "OPTIND",
+        "botlogin",
+        "chmod",
         "elif",
+        "esac",
+        "getopts",
         "mkdir",
+        "phantombot",
+        "printf",
+        "readlink",
         "systemctl",
         "systemd",
-        "urandom"
+        "uname",
+        "urandom",
+        "xidel"
     ]
 }
