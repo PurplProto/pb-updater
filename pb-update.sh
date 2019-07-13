@@ -235,7 +235,7 @@ checkUserVars() {
         requestSudoAccess "sudo access is required to login as the bot user. Please grant access, otherwise the script will be terminated here."
     fi
 
-    unitExists=$(ctlBot status > /dev/null && echo "$true")
+    unitExists=$(ctlBot is-enabled > /dev/null && echo "$true")
     if [[ "$systemdUnitName" ]] && [[ ! "$unitExists" ]]; then
         abortScript "The unit \"${systemdUnitName}\" doesn't appear to exist."
     fi
