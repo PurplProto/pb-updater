@@ -421,6 +421,7 @@ installNewBotVersion() {
 
         ## If file, copy it. If directory copy it's contents
         if [[ -f "$oldFileOrDirAbsolutePath" ]] || [[ -L "$oldFileOrDirAbsolutePath" ]]; then
+            doAsBotUser rm -rf "$newFileOrDirAbsolutePath"
             doAsBotUser mkdir -p "$(dirname "$oldFileOrDirAbsolutePath")"
             doAsBotUser cp -Pr "$oldFileOrDirAbsolutePath" "${newFileOrDirAbsolutePath%/}"
         elif [[ -d "$oldFileOrDirAbsolutePath" ]]; then
