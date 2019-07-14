@@ -5,7 +5,7 @@
 #   FileName:    pb-update.sh                                                  #
 #   Description: Back up PB's database, config and other non-standard          #
 #                files (modified files)                                        #
-#   Version:     0.0.1-alpha                                                   #
+#   Version:     0.0.3                                                         #
 ################################################################################
 
 ##                               User Variables                               ##
@@ -41,7 +41,7 @@ main() {
     local true="1"
     local scriptDisplayName="PairedPrototype's PhantomBot Updater"
     local scriptName="$0"
-    local scriptVersion="0.0.1-alpha"
+    local scriptVersion="0.0.3"
 
     parseOpts "${@}"
     checkDebug
