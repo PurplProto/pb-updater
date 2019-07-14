@@ -306,9 +306,9 @@ getXidelDeb() {
 curlAFile() {
     local urlToFetch="$1"
     local fileToSaveAs="$2"
-    local curlUserString="User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36"
+    local curlUserString="'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36'"
 
-    doAsBotUser curl -LH "$curlUserString" "$urlToFetch" > "$fileToSaveAs" 2>/dev/null
+    doAsBotUser curl -LH "$curlUserString" "$urlToFetch" -o "$fileToSaveAs" 2> /dev/null
 }
 
 setScriptVars() {
@@ -362,10 +362,12 @@ backupBot() {
 }
 
 doAsBotUser() {
+    local commandToExecute=("$@")
+
     if [[ "$botUserAccount" ]]; then
-        sudo -u "$botUserAccount" "$@" || commandFailed="$true"
+        sudo -u "$botUserAccount" bash -c "${commandToExecute[*]}" || commandFailed="$true"
     else
-        "$@" || commandFailed="$true"
+        bash -c "${commandToExecute[*]}" || commandFailed="$true"
     fi
 
     if [[ "$commandFailed" ]]; then
