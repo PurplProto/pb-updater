@@ -45,7 +45,6 @@ main() {
 
     parseOpts "${@}"
     checkDebug
-
     logMessage "${scriptDisplayName} v${scriptVersion}\n"
 
     checkUserVars
@@ -211,6 +210,9 @@ setupInitialVars() {
     if [[ ! "$botBackupDir" ]]; then
         botBackupDir="${botPath%/}/../botbackups"
     fi
+
+    doAsBotUser mkdir -p "$botBackupDir"
+    botBackupDir=$(readlink -f "$botBackupDir")
 }
 
 checkUserVars() {
@@ -218,11 +220,12 @@ checkUserVars() {
         abortScript "No bot path given. Cannot continue."
     elif [[ ! -d "$botPath" ]]; then
         abortScript "The given bot path \"${botPath}\" doesn't seem to exist."
+    else
+        botPath=$(readlink -f "$botPath")
     fi
 
     if [[ "$botBackupDir" ]] && [[ ! -d "$botBackupDir" ]]; then
         logWarn "\"${botBackupDir}\" doesn't exist, it will be created."
-        doAsBotUser mkdir -p "$botBackupDir"
     fi
 
     if [[ "$botUserAccount" ]]; then
@@ -319,7 +322,7 @@ setScriptVars() {
 
     botName=$(basename "$botPath")
     botParentDir=$(dirname "$(readlink -f "$botPath")")
-    botBackupFile=$(readlink -f "${botBackupDir%/}/${botName}-v${installedPbVersion}-${timeStamp}.tar.xz")
+    botBackupFile="${botBackupDir%/}/${botName}-v${installedPbVersion}-${timeStamp}.tar.xz"
     modifiedBotFiles+=("config/botlogin.txt" "config/phantombot.db")
 
     isUpdateReady=$(isNewVersion "$latestPbVersion" "$installedPbVersion" && echo "$true")
