@@ -420,7 +420,7 @@ installNewBotVersion() {
         local newFileOrDirAbsolutePath="${botPath%/}/${fileOrDir%/}"
 
         ## If file, copy it. If directory copy it's contents
-        if [[ -f "$oldFileOrDirAbsolutePath" ]]; then
+        if [[ -f "$oldFileOrDirAbsolutePath" ]] || [[ -L "$oldFileOrDirAbsolutePath" ]]; then
             doAsBotUser mkdir -p "$(dirname "$oldFileOrDirAbsolutePath")"
             doAsBotUser cp -Pr "$oldFileOrDirAbsolutePath" "${newFileOrDirAbsolutePath%/}"
         elif [[ -d "$oldFileOrDirAbsolutePath" ]]; then
