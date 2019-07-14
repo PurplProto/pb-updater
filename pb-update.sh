@@ -45,7 +45,6 @@ main() {
 
     parseOpts "${@}"
     checkDebug
-
     logMessage "${scriptDisplayName} v${scriptVersion}\n"
 
     checkUserVars
@@ -211,6 +210,9 @@ setupInitialVars() {
     if [[ ! "$botBackupDir" ]]; then
         botBackupDir="${botPath%/}/../botbackups"
     fi
+
+    doAsBotUser mkdir -p "$botBackupDir"
+    botBackupDir=$(readlink -f "$botBackupDir")
 }
 
 checkUserVars() {
@@ -218,11 +220,12 @@ checkUserVars() {
         abortScript "No bot path given. Cannot continue."
     elif [[ ! -d "$botPath" ]]; then
         abortScript "The given bot path \"${botPath}\" doesn't seem to exist."
+    else
+        botPath=$(readlink -f "$botPath")
     fi
 
     if [[ "$botBackupDir" ]] && [[ ! -d "$botBackupDir" ]]; then
         logWarn "\"${botBackupDir}\" doesn't exist, it will be created."
-        doAsBotUser mkdir -p "$botBackupDir"
     fi
 
     if [[ "$botUserAccount" ]]; then
@@ -319,7 +322,7 @@ setScriptVars() {
 
     botName=$(basename "$botPath")
     botParentDir=$(dirname "$(readlink -f "$botPath")")
-    botBackupFile=$(readlink -f "${botBackupDir%/}/${botName}-v${installedPbVersion}-${timeStamp}.tar.xz")
+    botBackupFile="${botBackupDir%/}/${botName}-v${installedPbVersion}-${timeStamp}.tar.xz"
     modifiedBotFiles+=("config/botlogin.txt" "config/phantombot.db")
 
     isUpdateReady=$(isNewVersion "$latestPbVersion" "$installedPbVersion" && echo "$true")
@@ -410,17 +413,19 @@ installNewBotVersion() {
     doAsBotUser mv "${botPath%/}" "${botOldName%/}"
     doAsBotUser mv "${pbExtracted%/}/PhantomBot-${latestPbVersion}" "${botPath%/}"
 
-    logInfo "Adding moving modified files to the new version"
+    logInfo "Moving modified files to the new version"
 
     for fileOrDir in "${modifiedBotFiles[@]}"; do
-        local fileOrDirAbsolutePath="${botOldName%/}/${fileOrDir%/}"
+        local oldFileOrDirAbsolutePath="${botOldName%/}/${fileOrDir%/}"
+        local newFileOrDirAbsolutePath="${botPath%/}/${fileOrDir%/}"
 
         ## If file, copy it. If directory copy it's contents
-        if [[ -f "$fileOrDirAbsolutePath" ]]; then
-            doAsBotUser cp -Pr "$fileOrDirAbsolutePath" "${botPath%/}/"
-        elif [[ -d "$fileOrDirAbsolutePath" ]]; then
+        if [[ -f "$oldFileOrDirAbsolutePath" ]]; then
+            doAsBotUser mkdir -p "$(dirname "$oldFileOrDirAbsolutePath")"
+            doAsBotUser cp -Pr "$oldFileOrDirAbsolutePath" "${newFileOrDirAbsolutePath%/}"
+        elif [[ -d "$oldFileOrDirAbsolutePath" ]]; then
             doAsBotUser mkdir -p "${botPath%/}/${fileOrDir}"
-            doAsBotUser cp -Pr "$fileOrDirAbsolutePath"/* "${botPath%/}/${fileOrDir}/"
+            doAsBotUser cp -Pr "$oldFileOrDirAbsolutePath"/* "${newFileOrDirAbsolutePath%/}/"
         fi
     done
 }
