@@ -5,7 +5,7 @@
 #   FileName:    pb-update.sh                                                  #
 #   Description: Back up PB's database, config and other non-standard          #
 #                files (modified files)                                        #
-#   Version:     0.0.4                                                         #
+#   Version:     0.0.5                                                         #
 ################################################################################
 
 ##                               User Variables                               ##
@@ -41,7 +41,7 @@ main() {
     local true="1"
     local scriptDisplayName="PairedPrototype's PhantomBot Updater"
     local scriptName="$0"
-    local scriptVersion="0.0.4"
+    local scriptVersion="0.0.5"
 
     parseOpts "${@}"
     checkDebug
@@ -238,7 +238,7 @@ checkUserVars() {
         requestSudoAccess "sudo access is required to login as the bot user. Please grant access, otherwise the script will be terminated here."
     fi
 
-    unitExists=$(ctlBot status > /dev/null && echo "$true")
+    unitExists=$(ctlBot is-enabled > /dev/null && echo "$true")
     if [[ "$systemdUnitName" ]] && [[ ! "$unitExists" ]]; then
         abortScript "The unit \"${systemdUnitName}\" doesn't appear to exist."
     fi
