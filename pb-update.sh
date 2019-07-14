@@ -5,7 +5,7 @@
 #   FileName:    pb-update.sh                                                  #
 #   Description: Back up PB's database, config and other non-standard          #
 #                files (modified files)                                        #
-#   Version:     0.0.1-alpha                                                   #
+#   Version:     0.0.4                                                         #
 ################################################################################
 
 ##                               User Variables                               ##
@@ -41,7 +41,7 @@ main() {
     local true="1"
     local scriptDisplayName="PairedPrototype's PhantomBot Updater"
     local scriptName="$0"
-    local scriptVersion="0.0.1-alpha"
+    local scriptVersion="0.0.4"
 
     parseOpts "${@}"
     checkDebug
@@ -420,7 +420,8 @@ installNewBotVersion() {
         local newFileOrDirAbsolutePath="${botPath%/}/${fileOrDir%/}"
 
         ## If file, copy it. If directory copy it's contents
-        if [[ -f "$oldFileOrDirAbsolutePath" ]]; then
+        if [[ -f "$oldFileOrDirAbsolutePath" ]] || [[ -L "$oldFileOrDirAbsolutePath" ]]; then
+            doAsBotUser rm -rf "$newFileOrDirAbsolutePath"
             doAsBotUser mkdir -p "$(dirname "$oldFileOrDirAbsolutePath")"
             doAsBotUser cp -Pr "$oldFileOrDirAbsolutePath" "${newFileOrDirAbsolutePath%/}"
         elif [[ -d "$oldFileOrDirAbsolutePath" ]]; then
