@@ -413,17 +413,19 @@ installNewBotVersion() {
     doAsBotUser mv "${botPath%/}" "${botOldName%/}"
     doAsBotUser mv "${pbExtracted%/}/PhantomBot-${latestPbVersion}" "${botPath%/}"
 
-    logInfo "Adding moving modified files to the new version"
+    logInfo "Moving modified files to the new version"
 
     for fileOrDir in "${modifiedBotFiles[@]}"; do
-        local fileOrDirAbsolutePath="${botOldName%/}/${fileOrDir%/}"
+        local oldFileOrDirAbsolutePath="${botOldName%/}/${fileOrDir%/}"
+        local newFileOrDirAbsolutePath="${botPath%/}/${fileOrDir%/}"
 
         ## If file, copy it. If directory copy it's contents
-        if [[ -f "$fileOrDirAbsolutePath" ]]; then
-            doAsBotUser cp -Pr "$fileOrDirAbsolutePath" "${botPath%/}/"
-        elif [[ -d "$fileOrDirAbsolutePath" ]]; then
+        if [[ -f "$oldFileOrDirAbsolutePath" ]]; then
+            doAsBotUser mkdir -p "$(dirname "$oldFileOrDirAbsolutePath")"
+            doAsBotUser cp -Pr "$oldFileOrDirAbsolutePath" "${newFileOrDirAbsolutePath%/}"
+        elif [[ -d "$oldFileOrDirAbsolutePath" ]]; then
             doAsBotUser mkdir -p "${botPath%/}/${fileOrDir}"
-            doAsBotUser cp -Pr "$fileOrDirAbsolutePath"/* "${botPath%/}/${fileOrDir}/"
+            doAsBotUser cp -Pr "$oldFileOrDirAbsolutePath"/* "${newFileOrDirAbsolutePath%/}/"
         fi
     done
 }
